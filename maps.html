@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Map API</title>
+</head>
+<body>
+    <h1>Google Static Maps & Geo code API</h1>
+
+    <label for="address">Type keywords or an address here: </label>
+    <input type="text" id="address">
+    <label for="size">Choose a size of the map:</label>
+        <select name="size" id="size">
+            <option value="null">---Please Select---</option>
+            <option value="10">City</option>
+            <option value="14">Street</option>
+            <option value="20">Building</option>
+        </select>
+    <input type="button" id="submit" value="submit">
+
+    <div id="result"></div>
+
+    <script>
+
+        let address = document.getElementById('address');
+        let submit = document.getElementById('submit');
+        let result = document.getElementById('result');
+     
+
+        let key = '<GOOGLE_BOOKS_API_KEY>';
+        
+        submit.addEventListener('click', function(){
+            
+            let input = address.value;
+            let urlInput = input.split(' ').join('+')
+            let size = document.getElementById('size');
+            let selectedSize = size.options[size.selectedIndex].value;
+            console.log(selectedSize);
+            
+            let geoUrl="https://maps.googleapis.com/maps/api/geocode/json?address=" + urlInput + "&language=EN&key=" + key;
+            console.log(geoUrl);
+            
+            fetch(geoUrl).then(function (response) {
+                
+                return response.json();
+                
+            }).then(function (data) {
+                
+                console.log(data);
+                
+                let lat = data.results[0].geometry.location.lat;
+                let lng = data.results[0].geometry.location.lng;
+                let formattedAddress = data.results[0].formatted_address;
+                
+                let mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?center='+lat+','+lng+'&language=EN&zoom='+selectedSize+'&size=800x800&key='+ key;
+                
+                result.innerHTML = '<div>'+ formattedAddress +'</div>'+'<img src = "'+ mapUrl +'">';
+                
+            }).catch(function (err){
+                console.warn('error', err);
+            })
+
+
+        })
+
+    </script>
+</body>
+</html>
+
